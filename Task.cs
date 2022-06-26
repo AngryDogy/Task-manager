@@ -6,7 +6,7 @@ class Task
     private bool isDeleted;
     private bool isCompleted;
     private DateTime deadline;
-    public Task(){}
+    public Task() { }
     public Task(string name_, DateTime deadline_)
     {
         name = name_;
@@ -40,6 +40,6 @@ class Task
         get { return deadline; }
         set { deadline = value; }
     }
-    
-    
+
+
 }

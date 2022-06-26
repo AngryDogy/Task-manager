@@ -26,7 +26,7 @@ class Manager
     public Dictionary<string, List<int>> Groups
     {
         get { return groups; }
-        set { groups = value; } 
+        set { groups = value; }
     }
     public Manager()
     {
@@ -43,7 +43,7 @@ class Manager
     }
     public int add(string name, string deadline)
     {
-        tasks.Add(new Task(name, DateTime.ParseExact(deadline,"dd/MM/yyyy",System.Globalization.CultureInfo.InvariantCulture)));
+        tasks.Add(new Task(name, DateTime.ParseExact(deadline, "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture)));
         ++size;
         return (size - 1);
     }
@@ -58,7 +58,7 @@ class Manager
             }
         }
     }
-    
+
     public void complete(int id)
     {
         for (int i = 0; i < Size; i++)
@@ -101,7 +101,7 @@ class Manager
     }
     public void add_to_group(int id, string name)
     {
-        
+
         groups[name].Add(id);
     }
     public void delete_group(string name)
@@ -123,6 +123,6 @@ class Manager
 
     }
 
-    
+
 
 }

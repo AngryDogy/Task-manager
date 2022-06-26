@@ -8,19 +8,19 @@ class Client
     {
         manager = manager_;
     }
-    public void start ()
+    public void start()
     {
         bool cycle = true;
         while (cycle)
         {
             string input = Console.ReadLine();
-            string []words = input.Split();
+            string[] words = input.Split();
             string command = words[0];
             try
             {
-                switch(command)
+                switch (command)
                 {
-                    
+
                     case "/add":
                         int id;
                         if (words.Length > 2)
@@ -85,13 +85,13 @@ class Client
 
                 }
             }
-            catch(Exception error)
+            catch (Exception error)
             {
                 Console.WriteLine(error);
             }
         }
     }
-    private void write_task (int id)
+    private void write_task(int id)
     {
         char cross;
         if (!manager.Tasks[id].IsDeleted)
@@ -123,18 +123,18 @@ class Client
                 {
                     cross = ' ';
                 }
-            
+
                 Console.WriteLine("   " + "[" + cross + "]" + ' ' + sub.Name);
             }
         }
     }
-    private void all ()
+    private void all()
     {
-        bool [] was = new bool[manager.Size];
+        bool[] was = new bool[manager.Size];
         foreach (string key in manager.Groups.Keys)
         {
             Console.WriteLine("Group: " + key);
-            foreach(int id in manager.Groups[key])
+            foreach (int id in manager.Groups[key])
             {
                 this.write_task(id);
                 was[id] = true;
@@ -150,7 +150,7 @@ class Client
             }
         }
     }
-    private void completed ()
+    private void completed()
     {
         for (int id = 0; id < manager.Size; id++)
         {
@@ -160,7 +160,7 @@ class Client
             }
         }
     }
-    private void completed (string name)
+    private void completed(string name)
     {
         foreach (int id in manager.Groups[name])
         {
@@ -185,8 +185,8 @@ class Client
     {
         using (StreamWriter writer = new StreamWriter(file_name))
         {
-            bool []was = new bool[manager.Size];
-            foreach(string key in manager.Groups.Keys)
+            bool[] was = new bool[manager.Size];
+            foreach (string key in manager.Groups.Keys)
             {
                 writer.WriteLineAsync("Group" + ' ' + key);
                 foreach (int id in manager.Groups[key])
@@ -194,7 +194,7 @@ class Client
                     string date = manager.Tasks[id].Deadline.Date.ToString("dd/MM/yyyy");
                     if (date == "01/01/0001")
                     {
-                         writer.WriteLineAsync(manager.Tasks[id].Name);
+                        writer.WriteLineAsync(manager.Tasks[id].Name);
                     }
                     else
                     {
@@ -212,14 +212,14 @@ class Client
                 }
                 writer.WriteLineAsync("End");
             }
-            for(int id = 0; id < manager.Size; id++)
+            for (int id = 0; id < manager.Size; id++)
             {
                 if (!was[id])
                 {
                     string date = manager.Tasks[id].Deadline.Date.ToString("dd/MM/yyyy");
                     if (date == "01/01/0001")
                     {
-                         writer.WriteLineAsync(manager.Tasks[id].Name);
+                        writer.WriteLineAsync(manager.Tasks[id].Name);
                     }
                     else
                     {
@@ -235,21 +235,21 @@ class Client
                     writer.WriteLineAsync("End");
                 }
             }
-    
-           
-        }           
+
+
+        }
     }
     private void load(string file_name)
     {
         using (StreamReader reader = new StreamReader(file_name))
-        {   
+        {
             string text, group_name;
             int id;
             while ((text = reader.ReadLine()) != null)
             {
-                 string []words = text.Split();
-                 if (words[0] == "Group")
-                 {
+                string[] words = text.Split();
+                if (words[0] == "Group")
+                {
                     manager.create_group(words[1]);
                     group_name = words[1];
                     while (true)
@@ -279,12 +279,12 @@ class Client
                             words = text.Split();
                             manager.add_subtask(id, words[0]);
                         }
-                    
+
 
                     }
-                 }
-                 else
-                 {
+                }
+                else
+                {
                     if (words.Length > 2)
                     {
                         id = manager.add(words[0], words[1]);
@@ -304,11 +304,11 @@ class Client
                         manager.add_subtask(id, words[0]);
                     }
                 }
-                 
-                 
+
+
             }
         }
     }
-    
+
 
 }
