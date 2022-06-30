@@ -1,147 +1,32 @@
 using System;
 using System.IO;
 using System.Text;
-class Client
+class MyClient : Client
 {
-    private Manager manager;
-    public Client(Manager manager_)
+    private Manager _manager;
+    public override Manager Manager 
     {
-        manager = manager_;
+        get { return _manager; }
+        set { _manager = value; }
     }
-    public void start()
+    public MyClient(Manager manager)
     {
-        bool cycle = true;
-        while (cycle)
-        {
-            string input = Console.ReadLine();
-            string[] words = input.Split();
-            string command = words[0];
-            try
-            {
-                switch (command)
-                {
-
-                    case "/add":
-                        int id;
-                        if (words.Length > 2)
-                        {
-                            id = manager.add(words[1], words[2]);
-                        }
-                        else
-                        {
-                            id = manager.add(words[1]);
-                        }
-                        Console.WriteLine("Task was created. Id: " + id);
-                        break;
-                    case "/delete":
-                        manager.delete(Convert.ToInt32(words[1]));
-                        break;
-                    case "/all":
-                        this.all();
-                        break;
-                    case "/save":
-                        this.save(words[1]);
-                        break;
-                    case "/load":
-                        this.load(words[1]);
-                        break;
-                    case "/create-group":
-                        manager.create_group(words[1]);
-                        break;
-                    case "/add-to-group":
-                        manager.add_to_group(Convert.ToInt32(words[1]), words[2]);
-                        break;
-                    case "/delete-group":
-                        manager.delete_group(words[1]);
-                        break;
-                    case "/delete-from-group":
-                        manager.delete_from_group(Convert.ToInt32(words[1]), words[2]);
-                        break;
-                    case "/complete":
-                        manager.complete(Convert.ToInt32(words[1]));
-                        break;
-                    case "/completed":
-                        if (words.Length > 1)
-                        {
-                            this.completed(words[1]);
-                        }
-                        else
-                        {
-                            this.completed();
-                        }
-                        break;
-                    case "/today":
-                        this.today();
-                        break;
-                    case "/add-subtask":
-                        manager.add_subtask(Convert.ToInt32(words[1]), words[2]);
-                        break;
-                    case "/break":
-                        cycle = false;
-                        break;
-                    default:
-                        Console.WriteLine("Wrong command!");
-                        break;
-
-                }
-            }
-            catch (Exception error)
-            {
-                Console.WriteLine(error);
-            }
-        }
+        _manager = manager;
     }
-    private void write_task(int id)
+    public override void all()
     {
-        char cross;
-        if (!manager.Tasks[id].IsDeleted)
-        {
-            if (manager.Tasks[id].IsCompleted)
-            {
-                cross = 'x';
-            }
-            else
-            {
-                cross = ' ';
-            }
-            string date = manager.Tasks[id].Deadline.Date.ToString("dd/MM/yyyy");
-            if (date == "01/01/0001")
-            {
-                date = " ";
-            }
-            Console.WriteLine("[" + cross + "]" + ' ' + "{" + id + "}" + ' ' + manager.Tasks[id].Name + ' ' + date);
-        }
-        if (manager.Subtasks.ContainsKey(id))
-        {
-            foreach (Task sub in manager.Subtasks[id])
-            {
-                if (sub.IsCompleted || manager.Tasks[id].IsCompleted)
-                {
-                    cross = 'x';
-                }
-                else
-                {
-                    cross = ' ';
-                }
-
-                Console.WriteLine("   " + "[" + cross + "]" + ' ' + sub.Name);
-            }
-        }
-    }
-    private void all()
-    {
-        bool[] was = new bool[manager.Size];
-        foreach (string key in manager.Groups.Keys)
+        bool[] was = new bool[Manager.Size];
+        foreach (string key in Manager.Groups.Keys)
         {
             Console.WriteLine("Group: " + key);
-            foreach (int id in manager.Groups[key])
+            foreach (int id in Manager.Groups[key])
             {
                 this.write_task(id);
                 was[id] = true;
             }
             Console.WriteLine(" ");
         }
-        for (int id = 0; id < manager.Size; id++)
+        for (int id = 0; id < Manager.Size; id++)
         {
 
             if (!was[id])
@@ -150,59 +35,59 @@ class Client
             }
         }
     }
-    private void completed()
+    public override void completed()
     {
-        for (int id = 0; id < manager.Size; id++)
+        for (int id = 0; id < Manager.Size; id++)
         {
-            if (!manager.Tasks[id].IsDeleted && manager.Tasks[id].IsCompleted)
+            if (!Manager.Tasks[id].IsDeleted && Manager.Tasks[id].IsCompleted)
             {
                 this.write_task(id);
             }
         }
     }
-    private void completed(string name)
+    public override void completed(string name)
     {
-        foreach (int id in manager.Groups[name])
+        foreach (int id in Manager.Groups[name])
         {
-            if (!manager.Tasks[id].IsDeleted && manager.Tasks[id].IsCompleted)
+            if (!Manager.Tasks[id].IsDeleted && Manager.Tasks[id].IsCompleted)
             {
                 this.write_task(id);
             }
         }
     }
-    private void today()
+    public override void today()
     {
         string today = DateTime.Now.ToString("dd/MM/yyyy");
-        for (int id = 0; id < manager.Size; id++)
+        for (int id = 0; id < Manager.Size; id++)
         {
-            if (!manager.Tasks[id].IsDeleted && manager.Tasks[id].Deadline.ToString("dd/MM/yyyy") == today)
+            if (!Manager.Tasks[id].IsDeleted && Manager.Tasks[id].Deadline.ToString("dd/MM/yyyy") == today)
             {
                 this.write_task(id);
             }
         }
     }
-    private void save(string file_name)
+    public override void save(string file_name)
     {
         using (StreamWriter writer = new StreamWriter(file_name))
         {
-            bool[] was = new bool[manager.Size];
-            foreach (string key in manager.Groups.Keys)
+            bool[] was = new bool[Manager.Size];
+            foreach (string key in Manager.Groups.Keys)
             {
                 writer.WriteLineAsync("Group" + ' ' + key);
-                foreach (int id in manager.Groups[key])
+                foreach (int id in Manager.Groups[key])
                 {
-                    string date = manager.Tasks[id].Deadline.Date.ToString("dd/MM/yyyy");
+                    string date = Manager.Tasks[id].Deadline.Date.ToString("dd/MM/yyyy");
                     if (date == "01/01/0001")
                     {
-                        writer.WriteLineAsync(manager.Tasks[id].Name);
+                        writer.WriteLineAsync(Manager.Tasks[id].Name);
                     }
                     else
                     {
-                        writer.WriteLineAsync(manager.Tasks[id].Name + ' ' + date);
+                        writer.WriteLineAsync(Manager.Tasks[id].Name + ' ' + date);
                     }
-                    if (manager.Subtasks.ContainsKey(id))
+                    if (Manager.Subtasks.ContainsKey(id))
                     {
-                        foreach (Task sub in manager.Subtasks[id])
+                        foreach (Task sub in Manager.Subtasks[id])
                         {
                             writer.WriteLineAsync(sub.Name);
                         }
@@ -212,22 +97,22 @@ class Client
                 }
                 writer.WriteLineAsync("End");
             }
-            for (int id = 0; id < manager.Size; id++)
+            for (int id = 0; id < Manager.Size; id++)
             {
                 if (!was[id])
                 {
-                    string date = manager.Tasks[id].Deadline.Date.ToString("dd/MM/yyyy");
+                    string date = Manager.Tasks[id].Deadline.Date.ToString("dd/MM/yyyy");
                     if (date == "01/01/0001")
                     {
-                        writer.WriteLineAsync(manager.Tasks[id].Name);
+                        writer.WriteLineAsync(Manager.Tasks[id].Name);
                     }
                     else
                     {
-                        writer.WriteLineAsync(manager.Tasks[id].Name + ' ' + date);
+                        writer.WriteLineAsync(Manager.Tasks[id].Name + ' ' + date);
                     }
-                    if (manager.Subtasks.ContainsKey(id))
+                    if (Manager.Subtasks.ContainsKey(id))
                     {
-                        foreach (Task sub in manager.Subtasks[id])
+                        foreach (Task sub in Manager.Subtasks[id])
                         {
                             writer.WriteLineAsync(sub.Name);
                         }
@@ -239,7 +124,7 @@ class Client
 
         }
     }
-    private void load(string file_name)
+    public override void load(string file_name)
     {
         using (StreamReader reader = new StreamReader(file_name))
         {
@@ -250,7 +135,7 @@ class Client
                 string[] words = text.Split();
                 if (words[0] == "Group")
                 {
-                    manager.create_group(words[1]);
+                    Manager.create_group(words[1]);
                     group_name = words[1];
                     while (true)
                     {
@@ -262,13 +147,13 @@ class Client
                         words = text.Split();
                         if (words.Length > 2)
                         {
-                            id = manager.add(words[0], words[1]);
+                            id = Manager.add(words[0], words[1]);
                         }
                         else
                         {
-                            id = manager.add(words[0]);
+                            id = Manager.add(words[0]);
                         }
-                        manager.add_to_group(id, group_name);
+                        Manager.add_to_group(id, group_name);
                         while (true)
                         {
                             text = reader.ReadLine();
@@ -277,7 +162,7 @@ class Client
                                 break;
                             }
                             words = text.Split();
-                            manager.add_subtask(id, words[0]);
+                            Manager.add_subtask(id, words[0]);
                         }
 
 
@@ -287,11 +172,11 @@ class Client
                 {
                     if (words.Length > 2)
                     {
-                        id = manager.add(words[0], words[1]);
+                        id = Manager.add(words[0], words[1]);
                     }
                     else
                     {
-                        id = manager.add(words[0]);
+                        id = Manager.add(words[0]);
                     }
                     while (true)
                     {
@@ -301,11 +186,48 @@ class Client
                             break;
                         }
                         words = text.Split();
-                        manager.add_subtask(id, words[0]);
+                        Manager.add_subtask(id, words[0]);
                     }
                 }
 
 
+            }
+        }
+    }
+    private void write_task(int id)
+    {
+        char cross;
+        if (!Manager.Tasks[id].IsDeleted)
+        {
+            if (Manager.Tasks[id].IsCompleted)
+            {
+                cross = 'x';
+            }
+            else
+            {
+                cross = ' ';
+            }
+            string date = Manager.Tasks[id].Deadline.Date.ToString("dd/MM/yyyy");
+            if (date == "01/01/0001")
+            {
+                date = " ";
+            }
+            Console.WriteLine("[" + cross + "]" + ' ' + "{" + id + "}" + ' ' + Manager.Tasks[id].Name + ' ' + date);
+        }
+        if (Manager.Subtasks.ContainsKey(id))
+        {
+            foreach (Task sub in Manager.Subtasks[id])
+            {
+                if (sub.IsCompleted || Manager.Tasks[id].IsCompleted)
+                {
+                    cross = 'x';
+                }
+                else
+                {
+                    cross = ' ';
+                }
+
+                Console.WriteLine("   " + "[" + cross + "]" + ' ' + sub.Name);
             }
         }
     }

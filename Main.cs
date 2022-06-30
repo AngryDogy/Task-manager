@@ -3,8 +3,7 @@ class Program
 {
     static void Main(string[] args)
     {
-        Manager manager = new Manager();
-        Client client = new Client(manager);
-        client.start();
+        Client client = new MyClient(new MyManager());
+        Reader.start(client);
     }
 }

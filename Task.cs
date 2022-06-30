@@ -2,43 +2,43 @@ using System;
 
 class Task
 {
-    private string name;
-    private bool isDeleted;
-    private bool isCompleted;
-    private DateTime deadline;
+    private string _name;
+    private bool _isDeleted;
+    private bool _isCompleted;
+    private DateTime _deadline;
     public Task() { }
-    public Task(string name_, DateTime deadline_)
+    public Task(string name, DateTime deadline)
     {
-        name = name_;
-        isCompleted = false;
-        isDeleted = false;
-        Deadline = deadline_;
+        Name = name;
+        IsCompleted = false;
+        IsDeleted = false;
+        Deadline = deadline;
     }
-    public Task(string name_)
+    public Task(string name)
     {
-        name = name_;
-        isCompleted = false;
-        isDeleted = false;
+        Name = name;
+        IsCompleted = false;
+        IsDeleted = false;
     }
     public string Name
     {
-        get { return name; }
-        set { name = value; }
+        get { return _name; }
+        set { _name = value; }
     }
     public bool IsDeleted
     {
-        get { return isDeleted; }
-        set { isDeleted = value; }
+        get { return _isDeleted; }
+        set { _isDeleted = value; }
     }
     public bool IsCompleted
     {
-        get { return isCompleted; }
-        set { isCompleted = value; }
+        get { return _isCompleted; }
+        set { _isCompleted = value; }
     }
     public DateTime Deadline
     {
-        get { return deadline; }
-        set { deadline = value; }
+        get { return _deadline; }
+        set { _deadline = value; }
     }
 
 

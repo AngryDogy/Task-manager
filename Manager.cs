@@ -2,124 +2,117 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-class Manager
+class MyManager : Manager
 {
-    private List<Task> tasks;
-    Dictionary<int, List<Task>> subtasks;
-    private int size;
-    Dictionary<string, List<int>> groups;
-    public List<Task> Tasks
+    private List<Task> _tasks;
+    Dictionary<int, List<Task>> _subtasks;
+    private int _size;
+    Dictionary<string, List<int>> _groups;
+    public override List<Task> Tasks
     {
-        get { return tasks; }
-        set { tasks = value; }
+        get { return _tasks; }
+        set { _tasks = value; }
     }
-    public Dictionary<int, List<Task>> Subtasks
+    public override Dictionary<int, List<Task>> Subtasks
     {
-        get { return subtasks; }
-        set { subtasks = value; }
+        get { return _subtasks; }
+        set { _subtasks = value; }
     }
-    public int Size
+    public override int Size 
     {
-        get { return size; }
-        set { size = value; }
+        get { return _size; }
+        set { _size = value; }
     }
-    public Dictionary<string, List<int>> Groups
+    public override Dictionary<string, List<int>> Groups
     {
-        get { return groups; }
-        set { groups = value; }
+        get { return _groups; }
+        set { _groups = value; }
+
     }
-    public Manager()
+    public MyManager()
     {
-        tasks = new List<Task>();
-        subtasks = new Dictionary<int, List<Task>>();
-        groups = new Dictionary<string, List<int>>();
-        size = 0;
+        Tasks = new List<Task>();
+        Subtasks = new Dictionary<int, List<Task>>();
+        Groups = new Dictionary<string, List<int>>();
+        Size = 0;
     }
-    public int add(string name)
+    public override int add(string name)
     {
-        tasks.Add(new Task(name));
-        ++size;
-        return (size - 1);
+        Tasks.Add(new Task(name));
+        ++Size;
+        return (Size - 1);
     }
-    public int add(string name, string deadline)
+    public override int add(string name, string deadline)
     {
-        tasks.Add(new Task(name, DateTime.ParseExact(deadline, "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture)));
-        ++size;
-        return (size - 1);
+        Tasks.Add(new Task(name, DateTime.ParseExact(deadline, "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture)));
+        ++Size;
+        return (Size - 1);
     }
-    public void delete(int id)
+    public override void delete(int id)
     {
-        for (int i = 0; i < tasks.Capacity; i++)
-        {
-            if (i == id)
-            {
-                tasks[i].IsDeleted = true;
-                break;
-            }
-        }
+        Tasks[id].IsDeleted = true;
     }
 
-    public void complete(int id)
+    public override void complete(int id)
     {
-        for (int i = 0; i < Size; i++)
+        if (Tasks[id].IsDeleted)
         {
-            if (i == id)
+            return;
+        }
+        if (Subtasks.ContainsKey(id))
+        {
+            bool check = false;
+            foreach (Task sub in Subtasks[id])
             {
-                if (subtasks.ContainsKey(id))
+                if (check)
                 {
-                    bool check = false;
-                    foreach (Task sub in subtasks[id])
-                    {
-                        if (check)
-                        {
-                            check = false;
-                            break;
-                        }
-                        if (!sub.IsCompleted)
-                        {
-                            sub.IsCompleted = true;
-                            check = true;
-                        }
-                    }
-                    if (check)
-                    {
-                        tasks[i].IsCompleted = true;
-                    }
+                    check = false;
+                    break;
                 }
-                else
+                if (!sub.IsCompleted)
                 {
-                    tasks[i].IsCompleted = true;
+                    sub.IsCompleted = true;
+                    check = true;
                 }
-                break;
+            }
+            if (check)
+            {
+                Tasks[id].IsCompleted = true;
             }
         }
+        else
+        {
+            Tasks[id].IsCompleted = true;
+        }
+                
+          
     }
-    public void create_group(string name)
+    public override void create_group(string name)
     {
         List<int> id = new List<int>();
-        groups.Add(name, id);
+        Groups.Add(name, id);
     }
-    public void add_to_group(int id, string name)
+    public override void add_to_group(int id, string name)
     {
 
-        groups[name].Add(id);
+        Groups[name].Add(id);
     }
-    public void delete_group(string name)
+    public override void delete_group(string name)
     {
-        groups.Remove(name);
+        Groups.Remove(name);
     }
-    public void delete_from_group(int id, string name)
+    public override void delete_from_group(int id, string name)
     {
-        groups[name].Remove(id);
+        Groups[name].Remove(id);
     }
-    public void add_subtask(int id, string name)
+    public override void add_subtask(int id, string name)
     {
-        if (!subtasks.ContainsKey(id))
+        if (!Subtasks.ContainsKey(id))
         {
             List<Task> subtask = new List<Task>();
-            subtasks.Add(id, subtask);
+            Subtasks.Add(id, subtask);
         }
-        subtasks[id].Add(new Task(name));
+        Subtasks[id].Add(new Task(name));
 
     }
 
